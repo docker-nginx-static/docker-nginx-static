@@ -6,7 +6,7 @@ This command exposes an nginx server on port 8080 which serves the folder `/srv/
 
 ### nginx-static via HTTPS
 
-To serve your static files over HTTPS you must use another reverse proxy. We recommend [træfik](https://www.træfik.io) as a lightweight reverse proxy with docker integration. Do not even try to get HTTPS working with this image only, as it does not contain the nginx ssl module.
+To serve your static files over HTTPS you must use another reverse proxy. We recommend [træfik](https://traefik.io/) as a lightweight reverse proxy with docker integration. Do not even try to get HTTPS working with this image only, as it does not contain the nginx ssl module.
 
 ### nginx-static with docker-compose
 
