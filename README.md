@@ -4,6 +4,8 @@
 
 This command exposes an nginx server on port 8080 which serves the folder `/srv/web` from the host.
 
+The image is roughly half the size of the official nginx image and can only be used for static file serving.
+
 ### nginx-static via HTTPS
 
 To serve your static files over HTTPS you must use another reverse proxy. We recommend [træfik](https://traefik.io/) as a lightweight reverse proxy with docker integration. Do not even try to get HTTPS working with this image only, as it does not contain the nginx ssl module.
