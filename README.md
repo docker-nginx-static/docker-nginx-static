@@ -1,3 +1,5 @@
+[![](https://images.microbadger.com/badges/image/flashspys/nginx-static.svg)](https://microbadger.com/images/flashspys/nginx-static "Get your own image badge on microbadger.com") ![](https://img.shields.io/docker/pulls/flashspys/nginx-static.svg)
+
 # Super Lightweight nginx Image
 
 `docker run -v /srv/web:/static -p 8080:80 flashspys/nginx-static`
