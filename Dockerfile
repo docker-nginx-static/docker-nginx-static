@@ -21,11 +21,9 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		--http-scgi-temp-path=/var/cache/nginx/scgi_temp \
 		--user=nginx \
 		--group=nginx \
-		--with-http_realip_module \
 		--with-http_gunzip_module \
 		--with-http_gzip_static_module \
 		--with-threads \
-		--with-compat \
 		--with-file-aio \
 	" \
 	&& addgroup -S nginx \
