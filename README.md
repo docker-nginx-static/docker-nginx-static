@@ -1,6 +1,6 @@
 [![](https://images.microbadger.com/badges/image/flashspys/nginx-static.svg)](https://microbadger.com/images/flashspys/nginx-static "Get your own image badge on microbadger.com") ![](https://img.shields.io/docker/pulls/flashspys/nginx-static.svg)
 
-# Super Lightweight nginx Image
+# Super Lightweight Nginx Image
 
 `docker run -v /srv/web:/static -p 8080:80 flashspys/nginx-static`
 
@@ -12,7 +12,7 @@ The image is roughly half the size of the official nginx image and can only be u
 
 To serve your static files over HTTPS you must use another reverse proxy. We recommend [træfik](https://traefik.io/) as a lightweight reverse proxy with docker integration. Do not even try to get HTTPS working with this image only, as it does not contain the nginx ssl module.
 
-### nginx-static with docker-compose
+### nginx-static
 
 ```
 version: '3'
@@ -48,4 +48,19 @@ To use nginx-static with træfik add an entry to your services in a docker-compo
       - traefik.frontend.headers.STSPreload=true
     volumes: 
       - /srv/web:/static
+```
+
+### nginx-static for multi-stage builds
+
+nginx-static is also suitable for multi-stage builds. This is an example Dockerfile:
+
+```
+FROM node:alpine
+WORKDIR /usr/src/app
+COPY . /usr/src/app
+RUN npm install && npm run build
+
+FROM flashspys/nginx-static
+RUN apk update && apk upgrade
+COPY --from=0 /usr/src/app/dist /static
 ```
