@@ -13,7 +13,7 @@ The image is roughly half the size of the official nginx image and can only be u
 To serve your static files over HTTPS you must use another reverse proxy. We recommend [træfik](https://traefik.io/) as a lightweight reverse proxy with docker integration. Do not even try to get HTTPS working with this image only, as it does not contain the nginx ssl module.
 
 ### nginx-static
-
+This is an example entry for a `docker-compose.yaml`
 ```
 version: '3'
 services:
