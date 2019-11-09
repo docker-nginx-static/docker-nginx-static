@@ -34,7 +34,7 @@ To use nginx-static with træfik add an entry to your services in a docker-compo
 ```
 services:
   traefik:
-    image: traefik
+    image: traefik:1.7
     ...
   example.org:
     image: flashspys/nginx-static
