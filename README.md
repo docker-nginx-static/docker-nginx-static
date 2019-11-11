@@ -56,7 +56,7 @@ services:
       - /host/path/to/serve:/static
 ```
 
-For a treafik 1.7 example look [at an old version of the readme](https://github.com/flashspys/docker-nginx-static/blob/bb46250b032d187cab6029a84335099cc9b4cb0e/README.md)
+For a traefik 1.7 example look [at an old version of the readme](https://github.com/flashspys/docker-nginx-static/blob/bb46250b032d187cab6029a84335099cc9b4cb0e/README.md)
 
 ### nginx-static for multi-stage builds
 
