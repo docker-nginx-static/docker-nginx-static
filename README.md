@@ -27,14 +27,17 @@ services:
 ```
 
 
-### nginx-static with træfik
+### nginx-static with træfik 2.0
 
-To use nginx-static with træfik add an entry to your services in a docker-compose.yaml.
+To use nginx-static with træfik 2.0 add an entry to your services in a docker-compose.yaml. To set up traefik look at this [simple example](https://docs.traefik.io/user-guides/docker-compose/basic-example/). 
+
+In the following example, replace everything contained in <angle brackets> and the domain with your values.
 
 ```
 services:
   traefik:
-    image: traefik:1.7
+    image: traefik:2.0
+  # Your treafik config.
     ...
   example.org:
     image: flashspys/nginx-static
@@ -44,16 +47,16 @@ services:
     expose:
       - 80
     labels:
-      - traefik.enable=true
-      - traefik.backend=example.org
-      - traefik.docker.network=web
-      - traefik.frontend.rule=Host:example.org
-      - traefik.frontend.headers.STSSeconds=315360000
-      - traefik.frontend.headers.STSIncludeSubdomains=true
-      - traefik.frontend.headers.STSPreload=true
+      - "traefik.enable=true"
+      - "traefik.http.routers.<router>.rule=Host(`example.org`)"
+      - "traefik.http.routers.<router>.entrypoints=<entrypoint>"
+# If you want to enable SSL, uncomment the following line.
+#      - "traefik.http.routers.<router>.tls.certresolver=<certresolver>"
     volumes: 
-      - /path/to/serve:/static
+      - /host/path/to/serve:/static
 ```
+
+For a treafik 1.7 example look [at an old version of the readme](https://github.com/flashspys/docker-nginx-static/blob/bb46250b032d187cab6029a84335099cc9b4cb0e/README.md)
 
 ### nginx-static for multi-stage builds
 
