@@ -42,8 +42,6 @@ services:
   example.org:
     image: flashspys/nginx-static
     container_name: example.org
-    networks:
-      - web
     expose:
       - 80
     labels:
@@ -55,6 +53,8 @@ services:
     volumes: 
       - /host/path/to/serve:/static
 ```
+
+If traefik and the nginx-static are in distinct docker-compose.yml files, please make sure that they are in the same network.
 
 For a traefik 1.7 example look [at an old version of the readme](https://github.com/flashspys/docker-nginx-static/blob/bb46250b032d187cab6029a84335099cc9b4cb0e/README.md)
 
