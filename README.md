@@ -2,7 +2,7 @@
 
 # Super Lightweight Nginx Image
 
-`docker run -v /path/to/serve:/static -p 8080:80 flashspys/nginx-static`
+`docker run -v /absolute/path/to/serve:/static -p 8080:80 flashspys/nginx-static`
 
 This command exposes an nginx server on port 8080 which serves the folder `/path/to/serve` from the host.
 
