@@ -75,7 +75,7 @@ COPY --from=0 /usr/src/app/dist /static
 
 ### Custom nginx config
 
-In the case you already have your own Dockerfile you can easily adjust the nginx config by adding the following command in your Dockerfile. This can be used for advanced rewriting rules or adding specific headers and handlers. See the default config [here](nginx.vh.default.conf).
+In the case you already have your own Dockerfile you can easily adjust the nginx config by adding the following command in your Dockerfile. In case you don't want to create an own Dockerfile you can also add the configuration via volumes, e.g. appending `-v /absolute/path/to/custom.conf:/etc/nginx/conf.d/default.conf` in the command line or adding the volume in the docker-compose.yaml respectively. This can be used for advanced rewriting rules or adding specific headers and handlers. See the default config [here](nginx.vh.default.conf).
 
 ```
 …
