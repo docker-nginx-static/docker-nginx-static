@@ -75,7 +75,7 @@ COPY --from=0 /usr/src/app/dist /static
 
 ### Custom nginx config
 
-In the case you already have your own Dockerfile you can easily adjust the nginx config by adding the following command in your Dockerfile
+In the case you already have your own Dockerfile you can easily adjust the nginx config by adding the following command in your Dockerfile. This can be used for advanced rewriting rules or adding specific headers and handlers. See the default config [here](nginx.vh.default.conf).
 
 ```
 …
@@ -83,4 +83,3 @@ FROM flashspys/nginx-static
 RUN rm -rf /etc/nginx/conf.d/default.conf
 COPY your-custom-nginx.conf /etc/nginx/conf.d/default.conf
 ```
-
