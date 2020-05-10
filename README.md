@@ -12,7 +12,7 @@ The image can only be used for static file serving but has with **less than 4 MB
 
 To serve your static files over HTTPS you must use another reverse proxy. We recommend [træfik](https://traefik.io/) as a lightweight reverse proxy with docker integration. Do not even try to get HTTPS working with this image only, as it does not contain the nginx ssl module.
 
-### nginx-static with docker-compose
+## nginx-static with docker-compose
 This is an example entry for a `docker-compose.yaml`
 ```
 version: '3'
@@ -27,7 +27,7 @@ services:
 ```
 
 
-### nginx-static with træfik 2.0
+## nginx-static with træfik 2.0
 
 To use nginx-static with træfik 2.0 add an entry to your services in a docker-compose.yaml. To set up traefik look at this [simple example](https://docs.traefik.io/user-guides/docker-compose/basic-example/). 
 
@@ -58,7 +58,7 @@ If traefik and the nginx-static are in distinct docker-compose.yml files, please
 
 For a traefik 1.7 example look [at an old version of the readme](https://github.com/flashspys/docker-nginx-static/blob/bb46250b032d187cab6029a84335099cc9b4cb0e/README.md)
 
-### nginx-static for multi-stage builds
+## nginx-static for multi-stage builds
 
 nginx-static is also suitable for multi-stage builds. This is an example Dockerfile for a static nodejs application:
 
@@ -71,4 +71,15 @@ RUN npm install && npm run build
 FROM flashspys/nginx-static
 RUN apk update && apk upgrade
 COPY --from=0 /usr/src/app/dist /static
+```
+
+### Custom nginx config
+
+In the case you already have your own Dockerfile you can easily adjust the nginx config by adding the following command in your Dockerfile. In case you don't want to create an own Dockerfile you can also add the configuration via volumes, e.g. appending `-v /absolute/path/to/custom.conf:/etc/nginx/conf.d/default.conf` in the command line or adding the volume in the docker-compose.yaml respectively. This can be used for advanced rewriting rules or adding specific headers and handlers. See the default config [here](nginx.vh.default.conf).
+
+```
+…
+FROM flashspys/nginx-static
+RUN rm -rf /etc/nginx/conf.d/default.conf
+COPY your-custom-nginx.conf /etc/nginx/conf.d/default.conf
 ```
