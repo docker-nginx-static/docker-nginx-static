@@ -37,7 +37,7 @@ In the following example, replace everything contained in <angle brackets> and t
 services:
   traefik:
     image: traefik:2.0
-  # Your treafik config.
+  # Your traefik config.
     ...
   example.org:
     image: flashspys/nginx-static
