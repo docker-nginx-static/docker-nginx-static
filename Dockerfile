@@ -1,8 +1,11 @@
-FROM alpine:3.11
+FROM alpine:3.12
 
 LABEL maintainer="Felix Wehnert <felix@wehnert.me>"
 
-ENV NGINX_VERSION 1.17.10
+ENV NGINX_VERSION 1.19.1
+
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+WORKDIR /usr/src
 
 RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& CONFIG="\
@@ -40,7 +43,8 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		gd-dev \
 	&& curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
 	&& curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc  -o nginx.tar.gz.asc \
-	&& export GNUPGHOME="$(mktemp -d)" \
+	&& GNUPGHOME="$(mktemp -d)" \
+	&& export GNUPGHOME \
 	&& found=''; \
 	for server in \
 		ha.pool.sks-keyservers.net \
@@ -54,10 +58,8 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	test -z "$found" && echo >&2 "error: failed to fetch GPG key $GPG_KEYS" && exit 1; \
 	gpg --batch --verify nginx.tar.gz.asc nginx.tar.gz \
 	&& rm -rf "$GNUPGHOME" nginx.tar.gz.asc \
-	&& mkdir -p /usr/src \
-	&& tar -zxC /usr/src -f nginx.tar.gz \
+	&& tar -zx --strip-components=1 -f nginx.tar.gz \
 	&& rm nginx.tar.gz \
-	&& cd /usr/src/nginx-$NGINX_VERSION \
 	&& ./configure $CONFIG --with-debug \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
 	&& mv objs/nginx objs/nginx-debug \
@@ -72,7 +74,7 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& install -m755 objs/nginx-debug /usr/sbin/nginx-debug \
 	&& ln -s ../../usr/lib/nginx/modules /etc/nginx/modules \
 	&& strip /usr/sbin/nginx* \
-	&& rm -rf /usr/src/nginx-$NGINX_VERSION \
+	&& rm -rf /usr/src \
 	\
 	# Bring in gettext so we can get `envsubst`, then throw
 	# the rest away. To do this, we need to install `gettext`
