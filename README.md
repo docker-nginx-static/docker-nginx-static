@@ -27,16 +27,16 @@ services:
 ```
 
 
-## nginx-static with træfik 2.0
+## nginx-static with træfik 2.x
 
-To use nginx-static with træfik 2.0 add an entry to your services in a docker-compose.yaml. To set up traefik look at this [simple example](https://docs.traefik.io/user-guides/docker-compose/basic-example/). 
+To use nginx-static with træfik 2.x add an entry to your services in a docker-compose.yaml. To set up traefik look at this [simple example](https://docs.traefik.io/user-guides/docker-compose/basic-example/). 
 
 In the following example, replace everything contained in <angle brackets> and the domain with your values.
 
 ```
 services:
   traefik:
-    image: traefik:2.0
+    image: traefik:2.3 # check if there is a newer version
   # Your traefik config.
     ...
   example.org:
@@ -54,13 +54,13 @@ services:
       - /host/path/to/serve:/static
 ```
 
-If traefik and the nginx-static are in distinct docker-compose.yml files, please make sure that they are in the same network.
+If traefik and the nginx-static are in distinct docker-compose.yml files, please make sure that they are in the [same network](https://doc.traefik.io/traefik/routing/providers/docker/#traefikdockernetwork).
 
 For a traefik 1.7 example look [at an old version of the readme](https://github.com/flashspys/docker-nginx-static/blob/bb46250b032d187cab6029a84335099cc9b4cb0e/README.md)
 
 ## nginx-static for multi-stage builds
 
-nginx-static is also suitable for multi-stage builds. This is an example Dockerfile for a static nodejs application:
+nginx-static is also suitable for multi-stage builds. This is an example Dockerfile for a static node.js application:
 
 ```
 FROM node:alpine
