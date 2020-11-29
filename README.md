@@ -4,7 +4,7 @@
 
 `docker run -v /absolute/path/to/serve:/static -p 8080:80 flashspys/nginx-static`
 
-This command exposes an nginx server on port 8080 which serves the folder `/path/to/serve` from the host.
+This command exposes an nginx server on port 8080 which serves the folder `/absolute/path/to/serve` from the host.
 
 The image can only be used for static file serving but has with **less than 4 MB** roughly 1/10 the size of the official nginx image. The running container needs **~1 MB RAM**.
 
