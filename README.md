@@ -31,7 +31,7 @@ services:
 
 To use nginx-static with træfik 2.x add an entry to your services in a docker-compose.yaml. To set up traefik look at this [simple example](https://docs.traefik.io/user-guides/docker-compose/basic-example/). 
 
-In the following example, replace everything contained in <angle brackets> and the domain with your values.
+In the following example, replace everything contained in \<angle brackets\> and the domain with your values.
 
 ```
 services:
