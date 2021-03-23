@@ -14,7 +14,7 @@ To serve your static files over HTTPS you must use another reverse proxy. We rec
 
 ## nginx-static with docker-compose
 This is an example entry for a `docker-compose.yaml`
-```
+```yaml
 version: '3'
 services:
   example.org:
@@ -33,7 +33,7 @@ To use nginx-static with træfik 2.x add an entry to your services in a docker-c
 
 In the following example, replace everything contained in \<angle brackets\> and the domain with your values.
 
-```
+```yaml
 services:
   traefik:
     image: traefik:2.3 # check if there is a newer version
@@ -62,7 +62,7 @@ For a traefik 1.7 example look [at an old version of the readme](https://github.
 
 nginx-static is also suitable for multi-stage builds. This is an example Dockerfile for a static node.js application:
 
-```
+```dockerfile
 FROM node:alpine
 WORKDIR /usr/src/app
 COPY . /usr/src/app
@@ -77,7 +77,7 @@ COPY --from=0 /usr/src/app/dist /static
 
 In the case you already have your own Dockerfile you can easily adjust the nginx config by adding the following command in your Dockerfile. In case you don't want to create an own Dockerfile you can also add the configuration via volumes, e.g. appending `-v /absolute/path/to/custom.conf:/etc/nginx/conf.d/default.conf` in the command line or adding the volume in the docker-compose.yaml respectively. This can be used for advanced rewriting rules or adding specific headers and handlers. See the default config [here](nginx.vh.default.conf).
 
-```
+```dockerfile
 …
 FROM flashspys/nginx-static
 RUN rm -rf /etc/nginx/conf.d/default.conf
