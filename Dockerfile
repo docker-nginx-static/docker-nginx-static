@@ -2,7 +2,7 @@ FROM alpine:3.13
 
 LABEL maintainer="Felix Wehnert <felix@wehnert.me>"
 
-ENV NGINX_VERSION 1.19.4
+ENV NGINX_VERSION 1.19.8
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 WORKDIR /usr/src
