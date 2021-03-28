@@ -36,7 +36,7 @@ In the following example, replace everything contained in \<angle brackets\> and
 ```yaml
 services:
   traefik:
-    image: traefik:2.3 # check if there is a newer version
+    image: traefik:2.4 # check if there is a newer version
   # Your traefik config.
     ...
   example.org:
