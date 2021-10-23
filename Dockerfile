@@ -1,8 +1,8 @@
-FROM alpine:3.13
+FROM alpine:3.14
 
 LABEL maintainer="Felix Wehnert <felix@wehnert.me>"
 
-ENV NGINX_VERSION 1.19.8
+ENV NGINX_VERSION 1.21.3
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 WORKDIR /usr/src
@@ -41,8 +41,8 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		curl \
 		gnupg \
 		gd-dev \
-	&& curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
-	&& curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc  -o nginx.tar.gz.asc \
+	&& curl -fSL "https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz" -o nginx.tar.gz \
+	&& curl -fSL "https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc"  -o nginx.tar.gz.asc \
 	&& GNUPGHOME="$(mktemp -d)" \
 	&& export GNUPGHOME \
 	&& found=''; \
@@ -61,10 +61,10 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& tar -zx --strip-components=1 -f nginx.tar.gz \
 	&& rm nginx.tar.gz \
 	&& ./configure $CONFIG --with-debug \
-	&& make -j$(getconf _NPROCESSORS_ONLN) \
+	&& make -j "$(getconf _NPROCESSORS_ONLN)" \
 	&& mv objs/nginx objs/nginx-debug \
 	&& ./configure $CONFIG \
-	&& make -j$(getconf _NPROCESSORS_ONLN) \
+	&& make -j "$(getconf _NPROCESSORS_ONLN)" \
 	&& make install \
 	&& rm -rf /etc/nginx/html/ \
 	&& mkdir /etc/nginx/conf.d/ \
