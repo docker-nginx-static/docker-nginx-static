@@ -1,8 +1,8 @@
-FROM alpine:3.14
+FROM alpine:3.15
 
-LABEL maintainer="Felix Wehnert <felix@wehnert.me>"
+LABEL maintainer="Felix Wehnert <felix@wehnert.me>,Maximilian Hippler <hello@maximilian.dev>"
 
-ENV NGINX_VERSION 1.21.4
+ENV NGINX_VERSION 1.21.5
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 WORKDIR /usr/src
