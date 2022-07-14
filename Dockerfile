@@ -1,13 +1,17 @@
-FROM alpine:3.15
+FROM alpine:3.16
 
 LABEL maintainer="Felix Wehnert <felix@wehnert.me>,Maximilian Hippler <hello@maximilian.dev>"
 
-ENV NGINX_VERSION 1.21.6
+ENV NGINX_VERSION 1.23.0
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 WORKDIR /usr/src
 
-RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
+RUN GPG_KEYS="B0F4253373F8F6F510D42178520A9993A1C052F8 \
+	41DB92713D3BF4BFF3EE91069C5E7FA2F54977D4 \
+	7338973069ED3F443F4D37DFA64FD5B17ADB39A8 \
+	13C82A63B603576156E30A4EA0EA981B66B0D967 \
+	573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62" \
 	&& CONFIG="\
 	--prefix=/etc/nginx \
 	--sbin-path=/usr/sbin/nginx \
@@ -43,27 +47,39 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	gd-dev \
 	&& curl -fSL "https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz" -o nginx.tar.gz \
 	&& curl -fSL "https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc"  -o nginx.tar.gz.asc \
+	# Mitigate Shellcheck 2086, we want to split words
+	&& fetch_gpg_keys() { \
+		set -- "$@" "--recv-keys"; \
+		for key in $GPG_KEYS; do set -- "$@" "$key"; done; \
+		gpg "$@"; \
+	} \
 	&& GNUPGHOME="$(mktemp -d)" \
 	&& export GNUPGHOME \
 	&& found=''; \
 	for server in \
-	ha.pool.sks-keyservers.net \
 	hkp://keyserver.ubuntu.com:80 \
-	hkp://p80.pool.sks-keyservers.net:80 \
 	pgp.mit.edu \
 	; do \
-	echo "Fetching GPG key $GPG_KEYS from $server"; \
-	gpg --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$GPG_KEYS" && found=yes && break; \
+	echo "Fetching GPG keys $GPG_KEYS from $server"; \
+	fetch_gpg_keys --keyserver "$server" --keyserver-options timeout=10 && found=yes && break; \
 	done; \
-	test -z "$found" && echo >&2 "error: failed to fetch GPG key $GPG_KEYS" && exit 1; \
+	test -z "$found" && echo >&2 "error: failed to fetch GPG keys $GPG_KEYS" && exit 1; \
 	gpg --batch --verify nginx.tar.gz.asc nginx.tar.gz \
 	&& rm -rf "$GNUPGHOME" nginx.tar.gz.asc \
 	&& tar -zx --strip-components=1 -f nginx.tar.gz \
 	&& rm nginx.tar.gz \
-	&& ./configure $CONFIG --with-debug \
+	# Mitigate Shellcheck 2086, we want to split words
+	&& make_config() { \
+		for config_element in $CONFIG; do set -- "$@" "$config_element"; done; \
+		set -- "$@" "--with-debug"; \
+		set -o xtrace; \
+		./configure "$@"; \
+		set +o xtrace; \
+	} \
+	&& make_config \
 	&& make -j "$(getconf _NPROCESSORS_ONLN)" \
 	&& mv objs/nginx objs/nginx-debug \
-	&& ./configure $CONFIG \
+	&& make_config \
 	&& make -j "$(getconf _NPROCESSORS_ONLN)" \
 	&& make install \
 	&& rm -rf /etc/nginx/html/ \
@@ -81,15 +97,19 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	# then move `envsubst` out of the way so `gettext` can
 	# be deleted completely, then move `envsubst` back.
 	&& apk add --no-cache --virtual .gettext gettext \
-	&& mv /usr/bin/envsubst /tmp/ \
-	\
+	&& mv /usr/bin/envsubst /tmp/\
 	&& runDeps="$( \
 	scanelf --needed --nobanner --format '%n#p' /usr/sbin/nginx /usr/lib/nginx/modules/*.so /tmp/envsubst \
 	| tr ',' '\n' \
 	| sort -u \
 	| awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
 	)" \
-	&& apk add --no-cache --virtual .nginx-rundeps $runDeps \
+	# Mitigate Shellcheck 2086, we want to split words
+	&& install_deps() { \
+		for dep in $runDeps; do set -- "$dep" "$@"; done; \
+		apk add --no-cache --virtual .nginx-rundeps "$@"; \
+	} \
+	&& install_deps \
 	&& apk del .build-deps \
 	&& apk del .gettext \
 	&& mv /tmp/envsubst /usr/local/bin/ \
