@@ -1,8 +1,8 @@
-FROM alpine:3.16
+FROM alpine:3.17
 
 LABEL maintainer="Felix Wehnert <felix@wehnert.me>,Maximilian Hippler <hello@maximilian.dev>"
 
-ENV NGINX_VERSION 1.23.2
+ENV NGINX_VERSION 1.23.3
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 WORKDIR /usr/src
@@ -49,9 +49,9 @@ RUN GPG_KEYS="B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& curl -fSL "https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc"  -o nginx.tar.gz.asc \
 	# Mitigate Shellcheck 2086, we want to split words
 	&& fetch_gpg_keys() { \
-		set -- "$@" "--recv-keys"; \
-		for key in $GPG_KEYS; do set -- "$@" "$key"; done; \
-		gpg "$@"; \
+	set -- "$@" "--recv-keys"; \
+	for key in $GPG_KEYS; do set -- "$@" "$key"; done; \
+	gpg "$@"; \
 	} \
 	&& GNUPGHOME="$(mktemp -d)" \
 	&& export GNUPGHOME \
@@ -70,11 +70,11 @@ RUN GPG_KEYS="B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& rm nginx.tar.gz \
 	# Mitigate Shellcheck 2086, we want to split words
 	&& make_config() { \
-		for config_element in $CONFIG; do set -- "$@" "$config_element"; done; \
-		set -- "$@" "--with-debug"; \
-		set -o xtrace; \
-		./configure "$@"; \
-		set +o xtrace; \
+	for config_element in $CONFIG; do set -- "$@" "$config_element"; done; \
+	set -- "$@" "--with-debug"; \
+	set -o xtrace; \
+	./configure "$@"; \
+	set +o xtrace; \
 	} \
 	&& make_config \
 	&& make -j "$(getconf _NPROCESSORS_ONLN)" \
@@ -106,8 +106,8 @@ RUN GPG_KEYS="B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	)" \
 	# Mitigate Shellcheck 2086, we want to split words
 	&& install_deps() { \
-		for dep in $runDeps; do set -- "$dep" "$@"; done; \
-		apk add --no-cache --virtual .nginx-rundeps "$@"; \
+	for dep in $runDeps; do set -- "$dep" "$@"; done; \
+	apk add --no-cache --virtual .nginx-rundeps "$@"; \
 	} \
 	&& install_deps \
 	&& apk del .build-deps \
