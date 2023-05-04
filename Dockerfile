@@ -2,7 +2,7 @@ FROM alpine:3.17
 
 LABEL maintainer="Felix Wehnert <felix@wehnert.me>,Maximilian Hippler <hello@maximilian.dev>"
 
-# renovate: datasource=docker depName=library/nginx versioning=semver registryUrl=https://index.docker.io/v1
+# renovate: datasource=docker depName=library/nginx versioning=semver
 ENV NGINX_VERSION 1.23.4
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
