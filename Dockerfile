@@ -1,4 +1,4 @@
-FROM alpine:3.17
+FROM alpine:3.18
 
 LABEL maintainer="Felix Wehnert <felix@wehnert.me>,Maximilian Hippler <hello@maximilian.dev>"
 
