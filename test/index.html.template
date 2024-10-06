@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Docker nginx static test page</title>
+  </head>
+  <body>
+    RANDOMLY_GENERATED_GIBBERISH
+  </body>
+</html>
