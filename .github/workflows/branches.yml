@@ -36,7 +36,7 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=sha
+            type=sha,format=long
 
       # Build and push the Docker image
       - name: Build and push the Docker image
