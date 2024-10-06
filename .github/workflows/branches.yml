@@ -54,7 +54,7 @@ jobs:
       # Run the container
       - name: Run container
         run: |
-          docker run -d -p 8080:80 --name test-container -v ./test/index.html:/static/index.html ghcr.io/docker-nginx-static/nginx-static:${{ github.sha }}
+          docker run -d -p 8080:80 --name test-container -v ./test/index.html:/static/index.html ghcr.io/docker-nginx-static/nginx-static:sha-${{ github.sha }}
           sleep 5 # Allow some time for the container to start
 
       # Test with curl
