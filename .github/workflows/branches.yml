@@ -1,0 +1,70 @@
+name: CI Build and Test Container
+
+# Build and test on all branches with pull request to main branch
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Create metadata to push to
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/docker-nginx-static/nginx-static
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,format=long
+
+      # Build and push the Docker image
+      - name: Build and push the Docker image
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      # Prepare test html file
+      - name: Prepare test html file
+        run: |
+          sed "s/RANDOMLY_GENERATED_GIBBERISH/$(cat /dev/urandom | tr -dc 'a-f0-9' | head -c 64)/g" test/index.html.template > test/index.html
+
+      # Run the container
+      - name: Run container
+        run: |
+          docker run -d -p 8080:80 --name test-container -v ./test/index.html:/static/index.html ghcr.io/docker-nginx-static/nginx-static:sha-${{ github.sha }}
+          sleep 5 # Allow some time for the container to start
+
+      # Test with curl
+      - name: Test the webpage
+        run: |
+          curl --fail -s http://localhost:8080 > test/received.html
+          diff test/index.html test/received.html
+
+      # Clean up the container
+      - name: Clean up
+        run: |
+          docker stop test-container
+          docker rm test-container
