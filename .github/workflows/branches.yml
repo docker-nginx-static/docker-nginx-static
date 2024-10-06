@@ -61,7 +61,7 @@ jobs:
       - name: Test the webpage
         run: |
           curl --fail -s http://localhost:8080 > test/received.html
-          diff index.html.template index.html
+          diff test/index.html.template test/index.html
 
       # Clean up the container
       - name: Clean up
