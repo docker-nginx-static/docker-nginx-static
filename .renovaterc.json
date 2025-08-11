@@ -1,10 +1,17 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base"],
-  "assignees": ["maxemann96"],
-  "regexManagers": [
+  "extends": [
+    "config:recommended"
+  ],
+  "assignees": [
+    "maxemann96"
+  ],
+  "customManagers": [
     {
-      "fileMatch": ["^Dockerfile$"],
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^Dockerfile$/"
+      ],
       "matchStrings": [
         "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?( registryUrl=(?<registryUrl>.*?))?\\s.*?_VERSION=(?<currentValue>.*)\\s"
       ],
@@ -13,7 +20,9 @@
   ],
   "packageRules": [
     {
-      "matchPackageNames": ["*"],
+      "matchPackageNames": [
+        "*"
+      ],
       "automerge": true
     }
   ]
