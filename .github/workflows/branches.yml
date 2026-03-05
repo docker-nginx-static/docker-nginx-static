@@ -40,7 +40,7 @@ jobs:
 
       # Build and push the Docker image
       - name: Build and push the Docker image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
