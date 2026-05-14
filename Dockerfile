@@ -3,7 +3,7 @@ FROM alpine:3.23
 LABEL maintainer="Maximilian Hippler <hello@maximilian.dev>"
 
 # renovate: datasource=docker depName=library/nginx versioning=semver
-ENV NGINX_VERSION=1.30.0
+ENV NGINX_VERSION=1.31.0
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 WORKDIR /usr/src
