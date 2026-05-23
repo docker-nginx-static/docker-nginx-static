@@ -44,10 +44,11 @@ services:
     container_name: example.org
     expose:
       - 80
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.<router>.rule=Host(`example.org`)"
-      - "traefik.http.routers.<router>.entrypoints=<entrypoint>"
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.<router>.rule=Host(`example.org`)"
+        - "traefik.http.routers.<router>.entrypoints=<entrypoint>"
 # If you want to enable SSL, uncomment the following line.
 #      - "traefik.http.routers.<router>.tls.certresolver=<certresolver>"
     volumes: 
