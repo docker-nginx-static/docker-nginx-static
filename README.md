@@ -8,6 +8,16 @@ This command exposes an nginx server on port 8080 which serves the folder `/abso
 
 The image can only be used for static file serving but has with **less than 4 MB** roughly 1/10 the size of the official nginx image. The running container needs **~1 MB RAM**.
 
+### Tags
+
+| tag | example | mutable |
+|---|---|---|
+| `latest` | `flashspys/nginx-static` | yes, every release |
+| nginx version | `flashspys/nginx-static:1.31.3` | yes, rebuilt on Alpine and config updates so you keep getting security fixes |
+| commit sha | `flashspys/nginx-static:sha-<full commit sha>` | no, pin this if you need a fixed image |
+
+Images are published to both Docker Hub (`flashspys/nginx-static`) and GHCR (`ghcr.io/docker-nginx-static/nginx-static`).
+
 ### nginx-static via HTTPS
 
 To serve your static files over HTTPS you must use another reverse proxy. We recommend [træfik](https://traefik.io/) as a lightweight reverse proxy with docker integration. Do not even try to get HTTPS working with this image only, as it does not contain the nginx ssl module.
