@@ -13,6 +13,9 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -31,12 +34,16 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Read nginx version
+      - name: Read versions
         id: version
         run: |
           V=$(grep -oP '^ENV NGINX_VERSION=\K.*' Dockerfile)
-          test -n "$V"
-          echo "nginx=$V" >> "$GITHUB_OUTPUT"
+          A=$(grep -oP '^FROM \K.*' Dockerfile)
+          test -n "$V" && test -n "$A"
+          {
+            echo "nginx=$V"
+            echo "alpine=$A"
+          } >> "$GITHUB_OUTPUT"
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v6
@@ -48,6 +55,9 @@ jobs:
             type=raw,value=latest
             type=raw,value=${{ steps.version.outputs.nginx }}
             type=sha,format=long
+          labels: |
+            org.opencontainers.image.version=${{ steps.version.outputs.nginx }}
+            org.opencontainers.image.base.name=docker.io/library/${{ steps.version.outputs.alpine }}
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v7
@@ -56,3 +66,14 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+      - name: Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NGINX: ${{ steps.version.outputs.nginx }}
+          ALPINE: ${{ steps.version.outputs.alpine }}
+          DIGEST: ${{ steps.docker_build.outputs.digest }}
+        run: |
+          TAG="v$NGINX-${GITHUB_SHA::7}"
+          gh release view "$TAG" >/dev/null 2>&1 && exit 0
+          gh release create "$TAG" --generate-notes \
+            --notes "nginx \`$NGINX\` on \`$ALPINE\`, digest \`$DIGEST\`"

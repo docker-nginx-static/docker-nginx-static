@@ -18,6 +18,16 @@ The image can only be used for static file serving but has with **less than 4 MB
 
 Images are published to both Docker Hub (`flashspys/nginx-static`) and GHCR (`ghcr.io/docker-nginx-static/nginx-static`).
 
+The nginx and Alpine versions of an image are readable without running it:
+
+```
+docker inspect -f '{{.Config.Labels}}' flashspys/nginx-static
+```
+
+### Releases
+
+Every published image gets a [GitHub release](https://github.com/docker-nginx-static/docker-nginx-static/releases). To be notified of new images, use Watch → Custom → Releases on this repository.
+
 ### nginx-static via HTTPS
 
 To serve your static files over HTTPS you must use another reverse proxy. We recommend [træfik](https://traefik.io/) as a lightweight reverse proxy with docker integration. Do not even try to get HTTPS working with this image only, as it does not contain the nginx ssl module.
