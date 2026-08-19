@@ -1,4 +1,4 @@
-[![](https://images.microbadger.com/badges/image/flashspys/nginx-static.svg)](https://microbadger.com/images/flashspys/nginx-static "Get your own image badge on microbadger.com") ![](https://img.shields.io/docker/pulls/flashspys/nginx-static.svg)
+[![GitHub](https://img.shields.io/badge/GitHub-docker--nginx--static-181717?logo=github)](https://github.com/docker-nginx-static/docker-nginx-static) [![Docker Pulls](https://img.shields.io/docker/pulls/flashspys/nginx-static.svg)](https://hub.docker.com/r/flashspys/nginx-static) [![GitHub stars](https://img.shields.io/github/stars/docker-nginx-static/docker-nginx-static?style=flat)](https://github.com/docker-nginx-static/docker-nginx-static/stargazers)
 
 # Super Lightweight Nginx Image
 
@@ -56,7 +56,7 @@ services:
 
 If traefik and the nginx-static are in distinct docker-compose.yml files, please make sure that they are in the [same network](https://doc.traefik.io/traefik/routing/providers/docker/#traefikdockernetwork).
 
-For a traefik 1.7 example look [at an old version of the readme](https://github.com/flashspys/docker-nginx-static/blob/bb46250b032d187cab6029a84335099cc9b4cb0e/README.md)
+For a traefik 1.7 example look [at an old version of the readme](https://github.com/docker-nginx-static/docker-nginx-static/blob/bb46250b032d187cab6029a84335099cc9b4cb0e/README.md)
 
 ## nginx-static for multi-stage builds
 
@@ -75,7 +75,7 @@ COPY --from=0 /usr/src/app/dist /static
 
 ### Custom nginx config
 
-In the case you already have your own Dockerfile you can easily adjust the nginx config by adding the following command in your Dockerfile. In case you don't want to create an own Dockerfile you can also add the configuration via volumes, e.g. appending `-v /absolute/path/to/custom.conf:/etc/nginx/conf.d/default.conf` in the command line or adding the volume in the docker-compose.yaml respectively. This can be used for advanced rewriting rules or adding specific headers and handlers. See the default config [here](nginx.vh.default.conf).
+In the case you already have your own Dockerfile you can easily adjust the nginx config by adding the following command in your Dockerfile. In case you don't want to create an own Dockerfile you can also add the configuration via volumes, e.g. appending `-v /absolute/path/to/custom.conf:/etc/nginx/conf.d/default.conf` in the command line or adding the volume in the docker-compose.yaml respectively. This can be used for advanced rewriting rules or adding specific headers and handlers. See the default config [here](https://github.com/docker-nginx-static/docker-nginx-static/blob/main/nginx.vh.default.conf).
 
 ```dockerfile
 …
