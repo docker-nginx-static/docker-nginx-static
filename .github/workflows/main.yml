@@ -4,11 +4,18 @@ on:
   push:
     branches:
       - "main"
+    paths:
+      - "Dockerfile"
+      - "nginx.conf"
+      - "nginx.vh.default.conf"
+  workflow_dispatch:
 
 jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
       - name: Set up Docker Buildx
@@ -24,15 +31,28 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Read nginx version
+        id: version
+        run: |
+          V=$(grep -oP '^ENV NGINX_VERSION=\K.*' Dockerfile)
+          test -n "$V"
+          echo "nginx=$V" >> "$GITHUB_OUTPUT"
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: |
+            flashspys/nginx-static
+            ghcr.io/docker-nginx-static/nginx-static
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ steps.version.outputs.nginx }}
+            type=sha,format=long
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v7
         with:
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: flashspys/nginx-static:latest
-      - name: Push Image to multiple registries
-        uses: akhilerm/tag-push-action@v2.3.0
-        with:
-          src: docker.io/flashspys/nginx-static:latest
-          dst: ghcr.io/docker-nginx-static/nginx-static:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
