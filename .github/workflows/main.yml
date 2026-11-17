@@ -6,6 +6,7 @@ on:
       - "main"
     paths:
       - "Dockerfile"
+      - "docker-entrypoint.sh"
       - "nginx.conf"
       - "nginx.vh.default.conf"
   workflow_dispatch:
