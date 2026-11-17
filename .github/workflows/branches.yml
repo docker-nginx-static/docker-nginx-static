@@ -61,8 +61,22 @@ jobs:
           curl --fail -s http://localhost:8080 > test/received.html
           diff test/index.html test/received.html
 
+      # Test IPv6 listening inside the container
+      - name: Test IPv6
+        run: |
+          docker logs test-container 2>&1 | grep -q "Enabled listen on IPv6"
+          docker exec test-container wget -qO- 'http://[::1]/' > test/received-ipv6.html
+          diff test/index.html test/received-ipv6.html
+
+      # The entrypoint must not prevent startup on a read-only root filesystem
+      - name: Test read-only container
+        run: |
+          docker run -d -p 8081:80 --name test-readonly --read-only --tmpfs /run --tmpfs /var/cache/nginx -v ./test/index.html:/static/index.html ghcr.io/docker-nginx-static/nginx-static:sha-${{ github.sha }}
+          sleep 5
+          curl --fail -s http://localhost:8081 > test/received-readonly.html
+          diff test/index.html test/received-readonly.html
+
       # Clean up the container
       - name: Clean up
         run: |
-          docker stop test-container
-          docker rm test-container
+          docker rm -f test-container test-readonly

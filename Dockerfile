@@ -133,8 +133,10 @@ RUN GPG_KEYS="43387825DDB1BB97EC36BA5D007C8D7C15D87369 \
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
-# clean copy to detect a user-provided config in entrypoint
-COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf.dist
+# checksum of the shipped default config, kept outside conf.d so no include glob
+# can load it; the entrypoint only edits default.conf if it still matches
+RUN mkdir -p /usr/share/nginx-static \
+       && sha256sum < /etc/nginx/conf.d/default.conf > /usr/share/nginx-static/default.conf.sha256
 COPY --chmod=755 docker-entrypoint.sh /
 
 EXPOSE 80
