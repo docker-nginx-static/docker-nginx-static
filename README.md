@@ -6,6 +6,8 @@
 
 This command exposes an nginx server on port 8080 which serves the folder `/absolute/path/to/serve` from the host.
 
+The container listens on both IPv4 and IPv6 by default. The IPv6 listener is only enabled at startup when the kernel provides IPv6 support.
+
 The image can only be used for static file serving but has with **less than 4 MB** roughly 1/10 the size of the official nginx image. The running container needs **~1 MB RAM**.
 
 ### Tags
