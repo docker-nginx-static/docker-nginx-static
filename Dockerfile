@@ -139,7 +139,7 @@ COPY --chmod=755 docker-entrypoint.sh /
 
 EXPOSE 80
 
-STOPSIGNAL SIGTERM
+STOPSIGNAL SIGQUIT
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
