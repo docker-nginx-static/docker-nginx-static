@@ -6,9 +6,26 @@ on:
     branches:
       - main
 
+# Nothing is pushed, so a read-only token is enough. This also lets pull
+# requests from forks pass, which only ever get a read-only token.
+permissions:
+  contents: read
+
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
+  # Build and test natively on every architecture that main.yml publishes
+  test:
+    name: test (${{ matrix.arch }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-26.04
+          - arch: arm64
+            runner: ubuntu-26.04-arm
+    runs-on: ${{ matrix.runner }}
+    env:
+      IMAGE: nginx-static:test
 
     steps:
       # Checkout the repository
@@ -18,31 +35,16 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v4
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      # Create metadata to push to
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v6
-        with:
-          images: ghcr.io/docker-nginx-static/nginx-static
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha,format=long
-
-      # Build and push the Docker image
-      - name: Build and push the Docker image
+      # Build the image into the local Docker engine, no registry involved
+      - name: Build the Docker image
         uses: docker/build-push-action@v7
         with:
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          load: true
+          tags: ${{ env.IMAGE }}
+
+      - name: Check image architecture
+        run: |
+          test "$(docker image inspect -f '{{.Architecture}}' "$IMAGE")" = "${{ matrix.arch }}"
 
       # Prepare test html file
       - name: Prepare test html file
@@ -52,7 +54,7 @@ jobs:
       # Run the container
       - name: Run container
         run: |
-          docker run -d -p 8080:80 --name test-container -v ./test/index.html:/static/index.html ghcr.io/docker-nginx-static/nginx-static:sha-${{ github.sha }}
+          docker run -d -p 8080:80 --name test-container -v ./test/index.html:/static/index.html "$IMAGE"
           sleep 5 # Allow some time for the container to start
 
       # Test with curl
@@ -71,12 +73,24 @@ jobs:
       # The entrypoint must not prevent startup on a read-only root filesystem
       - name: Test read-only container
         run: |
-          docker run -d -p 8081:80 --name test-readonly --read-only --tmpfs /run --tmpfs /var/cache/nginx -v ./test/index.html:/static/index.html ghcr.io/docker-nginx-static/nginx-static:sha-${{ github.sha }}
+          docker run -d -p 8081:80 --name test-readonly --read-only --tmpfs /run --tmpfs /var/cache/nginx -v ./test/index.html:/static/index.html "$IMAGE"
           sleep 5
           curl --fail -s http://localhost:8081 > test/received-readonly.html
           diff test/index.html test/received-readonly.html
 
       # Clean up the container
       - name: Clean up
+        if: always()
         run: |
           docker rm -f test-container test-readonly
+
+  # Single status check for the branch ruleset on main, independent of the
+  # matrix. Runs even if a test job failed, because a skipped required check
+  # would count as passed.
+  build-and-test:
+    if: always()
+    needs: test
+    runs-on: ubuntu-26.04
+    steps:
+      - name: All architectures passed
+        run: test "${{ needs.test.result }}" = success
