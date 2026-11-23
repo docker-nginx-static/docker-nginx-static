@@ -47,7 +47,7 @@ RUN GPG_KEYS="43387825DDB1BB97EC36BA5D007C8D7C15D87369 \
 	gcc \
 	libc-dev \
 	make \
-	pcre-dev \
+	pcre2-dev \
 	zlib-dev \
 	linux-headers \
 	curl \
