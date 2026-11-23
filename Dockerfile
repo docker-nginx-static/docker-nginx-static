@@ -40,6 +40,7 @@ RUN GPG_KEYS="43387825DDB1BB97EC36BA5D007C8D7C15D87369 \
 	--with-http_gzip_static_module \
 	--with-threads \
 	--with-file-aio \
+	--with-debug \
 	" \
 	&& addgroup -S nginx \
 	&& adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
@@ -78,14 +79,10 @@ RUN GPG_KEYS="43387825DDB1BB97EC36BA5D007C8D7C15D87369 \
 	# Mitigate Shellcheck 2086, we want to split words
 	&& make_config() { \
 	for config_element in $CONFIG; do set -- "$@" "$config_element"; done; \
-	set -- "$@" "--with-debug"; \
 	set -o xtrace; \
 	./configure "$@"; \
 	set +o xtrace; \
 	} \
-	&& make_config \
-	&& make -j "$(getconf _NPROCESSORS_ONLN)" \
-	&& mv objs/nginx objs/nginx-debug \
 	&& make_config \
 	&& make -j "$(getconf _NPROCESSORS_ONLN)" \
 	&& make install \
@@ -94,9 +91,11 @@ RUN GPG_KEYS="43387825DDB1BB97EC36BA5D007C8D7C15D87369 \
 	&& mkdir -p /usr/share/nginx/html/ \
 	&& install -m644 html/index.html /usr/share/nginx/html/ \
 	&& install -m644 html/50x.html /usr/share/nginx/html/ \
-	&& install -m755 objs/nginx-debug /usr/sbin/nginx-debug \
 	&& ln -s ../../usr/lib/nginx/modules /etc/nginx/modules \
-	&& strip /usr/sbin/nginx* \
+	&& strip /usr/sbin/nginx \
+	# nginx is already built --with-debug (debug logging via `error_log ... debug`);
+	# keep nginx-debug as an alias for setups that run it as their command
+	&& ln -s nginx /usr/sbin/nginx-debug \
 	&& rm -rf /usr/src \
 	\
 	# Bring in gettext so we can get `envsubst`, then throw
