@@ -116,8 +116,8 @@ RUN GPG_KEYS="43387825DDB1BB97EC36BA5D007C8D7C15D87369 \
 	apk add --no-cache --virtual .nginx-rundeps "$@"; \
 	} \
 	&& install_deps \
-	&& apk del .build-deps \
-	&& apk del .gettext \
+	&& apk del --no-cache .build-deps \
+	&& apk del --no-cache .gettext \
 	&& mv /tmp/envsubst /usr/local/bin/ \
 	\
 	# Bring in tzdata so users could set the timezones through the environment
