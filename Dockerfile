@@ -52,7 +52,6 @@ RUN GPG_KEYS="43387825DDB1BB97EC36BA5D007C8D7C15D87369 \
 	linux-headers \
 	curl \
 	gnupg \
-	gd-dev \
 	&& curl -fSL "https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz" -o nginx.tar.gz \
 	&& curl -fSL "https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc"  -o nginx.tar.gz.asc \
 	# Mitigate Shellcheck 2086, we want to split words
